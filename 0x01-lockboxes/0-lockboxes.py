@@ -1,23 +1,25 @@
 #!/usr/bin/python3
-"""Determines if all boxes can be opened """
+"""
+You have n number of locked boxes in front of you.
+Each box is numbered sequentially from 0 to n - 1
+and each box may contain keys to the other boxes.
+boxes is a list of lists
+A key with the same number as a box opens that box
+You can assume all keys will be positive integers
+The first box boxes[0] is unlocked
+Return True if all boxes can be opened, else return False
+"""
 
 
 def canUnlockAll(boxes):
-    """ Determines if all the boxes can be opened """
-    # Set of visited boxes
-    visited = set()
-
-    # Recursive helper function to explore all reachable boxes
-    def dfs(i):
-        # Mark the current box as visited
-        visited.add(i)
-
-        # Explore each box that can be reached from the current box
+    """ method that determines if all the boxes can be opened. """
+    n = len(boxes)
+    myList = [0]
+    for i in myList:
         for j in boxes[i]:
-            if j not in visited:
-                dfs(j)
-
-    # Start the depth-first search from the first box (which is unlocked)
-    dfs(0)
-
-    return len(visited) == len(boxes)
+            if j not in myList:
+                if j < n:
+                    myList.append(j)
+    if len(myList) == n:
+        return True
+    return False
