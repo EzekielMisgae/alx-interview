@@ -1,40 +1,46 @@
+#!/usr/bin/env python3
+
 import sys
-import signal
 
-total_file_size = 0
-status_code_counts = {}
+# Define the possible status codes
+STATUS_CODES = [200, 301, 400, 401, 403, 404, 405, 500]
 
-# Handler function for keyboard interruption
-def signal_handler(sig, frame):
-    print_stats()
-    sys.exit(0)
+# Initialize the metrics
+total_size = 0
+status_code_counts = {code: 0 for code in STATUS_CODES}
 
-# Print the current statistics
-def print_stats():
-    print(f'Total file size: {total_file_size}')
-    for code in sorted(status_code_counts.keys()):
-        print(f'{code}: {status_code_counts[code]}')
-
-# Register the handler for keyboard interruption
-signal.signal(signal.SIGINT, signal_handler)
-
-# Read from stdin line by line
-for i, line in enumerate(sys.stdin):
-    # Parse the line
-    parts = line.split()
-    if len(parts) != 7:
-        continue
-    ip, date, _, path, status, size, _ = parts
-    if path != '/projects/260':
-        continue
+# Read input line by line and compute metrics
+line_count = 0
+for line in sys.stdin:
+    # Parse the input line
     try:
-        size = int(size)
-        status = int(status)
+        ip, date, request, status_code, file_size = line.split(' ')
+        status_code = int(status_code)
+        file_size = int(file_size)
+        # We only count lines with the correct format
+        if request != 'GET /projects/260 HTTP/1.1':
+            continue
     except ValueError:
+        # Skip lines with incorrect format
         continue
-    # Update the statistics
-    total_file_size += size
-    status_code_counts[status] = status_code_counts.get(status, 0) + 1
-    # Print the statistics after every 10 lines
-    if (i + 1) % 10 == 0:
-        print_stats()
+    
+    # Update the metrics
+    total_size += file_size
+    if status_code in status_code_counts:
+        status_code_counts[status_code] += 1
+    
+    line_count += 1
+    
+    # Print the metrics every 10 lines
+    if line_count % 10 == 0:
+        print(f'Total file size: {total_size}')
+        for code in sorted(status_code_counts):
+            if status_code_counts[code] > 0:
+                print(f'{code}: {status_code_counts[code]}')
+        print()
+        
+# Print the final metrics
+print(f'Total file size: {total_size}')
+for code in sorted(status_code_counts):
+    if status_code_counts[code] > 0:
+        print(f'{code}: {status_code_counts[code]}')
