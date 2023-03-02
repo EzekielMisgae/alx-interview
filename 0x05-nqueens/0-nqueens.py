@@ -3,6 +3,7 @@
 
 import sys
 
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
@@ -12,11 +13,11 @@ if __name__ == '__main__':
         n = int(sys.argv[1])
     except ValueError:
         print('N must be a number')
-        sys.exit(1)
+        exit(1)
 
     if n < 4:
         print('N must be at least 4')
-        sys.exit(1)
+        exit(1)
 
     solutions = []
     placed_queens = []  # coordinates format [row, column]
@@ -33,7 +34,8 @@ if __name__ == '__main__':
             safe = True
             for cord in placed_queens:
                 col = cord[1]
-                if col == c or col + (r-cord[0]) == c or col - (r-cord[0]) == c:
+                if(col == c or col + (r-cord[0]) == c or
+                        col - (r-cord[0]) == c):
                     safe = False
                     break
 
@@ -54,7 +56,7 @@ if __name__ == '__main__':
                 for cord in placed_queens:
                     if cord[1] < n - 1:
                         r = cord[0]
-                        c = cord[1] + 1
+                        c = cord[1]
                 for i in range(n - r):
                     placed_queens.pop()
                 if r == n - 1 and c == n - 1:
@@ -82,11 +84,8 @@ if __name__ == '__main__':
             continue
         r += 1
 
-    # print solutions
-    for solution in solutions:
-        solution_str = ""
-        for queen in solution:
-            row, col = queen
-            row_str = '.' * col + 'Q' + '.' * (n - col - 1)
-            solution_str += row_str + '\n'
-        print(solution_str)
+    for i, val in enumerate(solutions):
+        if i == len(solutions) - 1:
+            print(val, end='')
+        else:
+            print(val)
